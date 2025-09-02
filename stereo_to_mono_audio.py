@@ -1,4 +1,5 @@
 import os
+import argparse
 from pydub import AudioSegment
 
 surahs = [
@@ -133,18 +134,51 @@ def convert_mp3_to_wav(source_path, output_path):
             print(f"Directory '{output_path}' already exists.")
         except Exception as e:
             print(f"An error occurred: {e}")
+            return
 
-    for file in os.listdir(source_path):
+    for file in sorted(os.listdir(source_path)):
         if file.endswith("mp3"):
-            mp3file = AudioSegment.from_file(os.path.join(source_path, file))
-            mp3file = mp3file.set_channels(1)
-            mp3file.export(os.path.join(output_path, file), format="mp3")
-            print(f"{file} converted")
+            try:
+                mp3file = AudioSegment.from_file(os.path.join(source_path, file))
+                mp3file = mp3file.set_channels(1)
+                mp3file.export(os.path.join(output_path, file), format="mp3")
+                print(f"{file} converted")
+            except Exception as e:
+                print(f"Error converting {file}: {e}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Convert MP3 files to WAV format with mono channel",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python stereo_to_mono_audio.py -s /path/to/source -o /path/to/output
+  python stereo_to_mono_audio.py --source /music/mp3files --output /music/wavfiles
+        """
+    )
+    
+    parser.add_argument(
+        "-s", "--source",
+        required=True,
+        help="Source directory containing MP3 files"
+    )
+    
+    parser.add_argument(
+        "-o", "--output", 
+        required=True,
+        help="Output directory for converted WAV files"
+    )
+    
+    args = parser.parse_args()
+    
+    # Pfade aus den Argumenten verwenden
+    convert_mp3_to_wav(args.source, args.output)
 
 if __name__ == "__main__":
-    source_path = "/Users/amarbanovic/Music/MahmoudKhalilAl-husary"
-    output_path = "/Users/amarbanovic/Music/MahmoudKhalilAl-husary/mp3files"
+    #source_path = "/Users/amarbanovic/Music/MahmoudKhalilAl-husary"
+    #output_path = "/Users/amarbanovic/Music/MahmoudKhalilAl-husary/mp3files"
 
-    convert_mp3_to_wav(source_path, output_path)
+    #convert_mp3_to_wav(source_path, output_path)
 
-
+    main()
