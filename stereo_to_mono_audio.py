@@ -1,6 +1,7 @@
 import os
 import argparse
 from pydub import AudioSegment
+from mutagen.easyid3 import EasyID3
 
 surahs = [
     "Al-Fatiha",
@@ -135,17 +136,25 @@ def convert_mp3_to_wav(source_path, output_path):
             print(f"An error occurred: {e}")
             return
 
-    index = 0
+    index = 0 
     for file in sorted(os.listdir(source_path)):
         if file.endswith("mp3"):
             try:
 
                 if index < len(surahs):
                     new_filename = f"{index+1:03d} {surahs[index]} - Hussary.mp3"
-                index = index + 1
+                
                 mp3file = AudioSegment.from_file(os.path.join(source_path, file))
                 mp3file = mp3file.set_channels(1)
                 mp3file.export(os.path.join(output_path, new_filename), format="mp3")
+
+                audio = EasyID3(os.path.join(output_path, new_filename))
+                audio["title"] = f"{index+1:03d} {surahs[index]}"
+                audio["artist"] = "Mahmoud Khalil Al-Hussary"
+                audio["album"] = "Al Quran - Mahmoud Khalil Al-Hussay"
+                audio.save()
+                index = index + 1
+
                 print(f"{new_filename} converted")
             except Exception as e:
                 print(f"Error converting {file}: {e}")
