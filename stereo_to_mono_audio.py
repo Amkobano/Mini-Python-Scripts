@@ -136,12 +136,24 @@ def convert_mp3_to_wav(source_path, output_path):
             print(f"An error occurred: {e}")
             return
 
+    index = 0
     for file in sorted(os.listdir(source_path)):
         if file.endswith("mp3"):
             try:
+                # surah_number = os.path.splitext(file)[0]
+                # index = int(surah_number) - 1
+                
+                # if 0 <= index < len(surahs):
+                #     surah_name = surahs[index]
+
+                # new_filename = f"{surah_number} {surah_name} - Hussary"
+
+                if index < len(surahs):
+                    new_filename = f"{index+1} {surahs[index} - Hussary.mp3"
+                
                 mp3file = AudioSegment.from_file(os.path.join(source_path, file))
                 mp3file = mp3file.set_channels(1)
-                mp3file.export(os.path.join(output_path, file), format="mp3")
+                mp3file.export(os.path.join(output_path, new_filename), format="mp3")
                 print(f"{file} converted")
             except Exception as e:
                 print(f"Error converting {file}: {e}")
